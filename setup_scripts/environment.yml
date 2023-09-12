@@ -1,0 +1,17 @@
+name: colibri
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+dependencies:
+  - python=3.10
+  - torchaudio
+  - torchvision
+  - pytorch-cuda=11.6
+  - pytorch
+  - pytorch-lightning
+  - mlflow
+  - pip:
+      - black
+      - pylint
+      - pytest
