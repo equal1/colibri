@@ -141,7 +141,6 @@ dmypy.json
 .DS_Store
 
 # Ignore the data files
-/data/external/*
 /data/interim/*
 /data/processed/*
 /data/raw/*
