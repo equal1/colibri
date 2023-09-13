@@ -149,11 +149,13 @@ click on "Use private key" and select the private key you generated in the previ
      # Custom aliases
       alias cdl='cd /local/rbals'
       alias ac="conda activate colibri"
+      alias a="conda activate"
       alias d="conda deactivate"
 
       # Change to work folder after ssh conncection
       cd /local/<your_username>
 
+      # Make sure to add the following line after the conda init calls
       # Activate automatically the conda env
       conda activate colibri
 
