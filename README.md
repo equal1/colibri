@@ -40,7 +40,7 @@ The project is structured as follows:
 │   │   
 │   ├── colibri           <- Root namespace for the framework
 │   │
-│   └── machine_learning  <- Directory for machine learning related code
+│   └── ml_tools  <- Directory for machine learning related code
 │     ├── data            <- Scripts to download or generate data
 │     │
 │     ├── features        <- Scripts to turn raw data into features for modeling
@@ -168,7 +168,7 @@ click on "Use private key" and select the private key you generated in the previ
 The point of this section is to provide some guidelines for the development of the repository. These are not strict rules and you can deviate from them if you have a good reason to do so. The goal is to try to set some rules that will make the development process easier for everyone.
 
 #### Code style
-The point of a coding style is to make the code more readable and easier to understand.That's where linting tools come into the picture, they help us enforce a said coding style. Please apply a linting tool before committing python code. 
+The point of a coding style is to make the code more readable and easier to understand. That's where linting tools come into the picture, they help us enforce a said coding style. Please apply a linting tool before committing python code. 
 Right now we use **pylint** and **Black** but we might transition to **Ruff** later on.
 
 #### Git workflow
