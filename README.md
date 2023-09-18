@@ -43,7 +43,7 @@ The project is structured as follows:
 │   └── ml_tools  <- Directory for machine learning related code
 │     ├── data            <- Scripts to download or generate data
 │     │
-│     ├── features        <- Scripts to turn raw data into features for modeling
+│     ├── preprocessing   <- Scripts to process raw data for modeling
 │     │
 │     ├── models          <- Scripts to train models and then use trained models to make
 │     │                      predictions
@@ -70,7 +70,7 @@ The documentation for this project is hosted on our wiki. You can find it here (
 
 ### For use or development on a local machine
 #### Prerequisites
-We are assuming that Git and a code editor(like VS Code,Neovim,etc) are already installed on your machine.
+We are assuming that Git and a code editor(like VSCode,Neovim,etc) are already installed on your machine.
 #### Steps
 1. Set up GitHub SSH key-based authentication on your target system(optional but recommended). You can find instructions on how to do that [here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent).
 
@@ -99,7 +99,7 @@ We are assuming that Git and a code editor(like VS Code,Neovim,etc) are already 
      conda activate colibri
    ```
    Note: You you made any mistake when working with conda you can simply delete the miniconda directory and start over without any issues.
-7. Open the project in your code editor. For VS CODE you can do this by running the following command in the root directory of the project:
+7. Open the project in your code editor. For VSCode you can do this by running the following command in the root directory of the project:
    ```bash
      code .
    ```
@@ -140,9 +140,9 @@ Most of the steps are taken from [here](https://paper.dropbox.com/doc/How-to-log
      cd <your_username>
    ```
 4. Follow the steps from the previous section to clone the repository and set up the environment(Steps 2-6).
-5. Now we need a way to connect with a code editor .For VS CODE follow the instructions from this [page](https://code.visualstudio.com/docs/remote/ssh), but only the subsection called "Installation" and "Connect to a remote host".
+5. Now we need a way to connect with a code editor .For VSCode follow the instructions from this [page](https://code.visualstudio.com/docs/remote/ssh), but only the subsection called "Installation" and "Connect to a remote host".
 6. You should setup your ssh key authtification so you don't need to enter your password every time you connect to Lena. You can find a very good article [here](https://adamtheautomator.com/add-ssh-key-to-vs-code/)(Follow the article until the section "Associating the Public Key with the root User").
-7. You can now only use VS CODE if you like, but i also like to still use MobaXterm for some things. You can set a new connection to Lena in MobaXterm by doing what we previsly did with the only diference that you can click on "Advanced SSH settings" and 
+7. You can now only use VSCode if you like, but i also like to still use MobaXterm for some things. You can set a new connection to Lena in MobaXterm by doing what we previsly did with the only diference that you can click on "Advanced SSH settings" and 
 click on "Use private key" and select the private key you generated in the previous step.Now you can connect to Lena with only one click and without entering your password.
 8. You can add the following line to your `.bashrc` file for easy access to the project:
    ```bash

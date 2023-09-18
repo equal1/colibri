@@ -4,10 +4,10 @@ import random, os
 import h5py
 import numpy as np
 
+import ml_tools.config as config
+
 # Class responsible for generating training sub-images from larger scans.
 class SubImageGenerator:
-
-    SUB_IMG_DIM = 64  # Dimension of the sub-image
 
     def __init__(self, border_margin: int):
         """ 
@@ -18,8 +18,8 @@ class SubImageGenerator:
         """
         self.border_margin = border_margin
 
-    @staticmethod
-    def calc_probability_vector(entry: Dict) -> np.ndarray:
+
+    def calc_probability_vector(self, entry: Dict) -> np.ndarray:
         """
         Computes a normalized distribution of labels.
 
@@ -29,15 +29,14 @@ class SubImageGenerator:
         histogram = np.histogram(2 * entry['state'], bins=[0, 1, 2, 3, 4, 5])[0]
         return histogram / np.sum(histogram)
 
-    @staticmethod
-    def generate_labels(entry: Dict) -> Dict:
+    def generate_labels(self, entry: Dict) -> Dict:
         """
         Populates the data dictionary with labels.
 
         Args:
             entry: Dictionary with label data.
         """
-        entry['state'] = SubImageGenerator.calc_probability_vector(entry)
+        entry['state'] = self.calc_probability_vector(entry)
         return entry
 
     def random_crop_origin(self, axis_length: int) -> int:
@@ -47,7 +46,7 @@ class SubImageGenerator:
         Args:
             axis_length: Length of the axis to crop from.
         """
-        return random.choice(range(int(self.border_margin), int(axis_length - self.SUB_IMG_DIM - self.border_margin)))
+        return random.choice(range(int(self.border_margin), int(axis_length - config.SUB_IMG_DIM - self.border_margin)))
 
     def generate_sub_image(self, sensor_vals: np.ndarray, state_vals: np.ndarray, 
                            x_axis: np.ndarray, y_axis: np.ndarray, 
@@ -65,11 +64,11 @@ class SubImageGenerator:
         origin_x, origin_y = self.random_crop_origin(len(x_axis)), self.random_crop_origin(len(y_axis))
         
         sub_img_data = {
-            'measurement': sensor_vals[origin_y:origin_y + self.SUB_IMG_DIM, origin_x:origin_x + self.SUB_IMG_DIM],
-            'state': state_vals[origin_y:origin_y + self.SUB_IMG_DIM, origin_x:origin_x + self.SUB_IMG_DIM],
+            'measurement': sensor_vals[origin_y:origin_y + config.SUB_IMG_DIM, origin_x:origin_x + config.SUB_IMG_DIM],
+            'state': state_vals[origin_y:origin_y + config.SUB_IMG_DIM, origin_x:origin_x + config.SUB_IMG_DIM],
             'noise_level': noise_scale,
-            'V1': np.linspace(x_axis[origin_x], x_axis[origin_x + self.SUB_IMG_DIM], self.SUB_IMG_DIM),
-            'V2': np.linspace(y_axis[origin_y], y_axis[origin_y + self.SUB_IMG_DIM], self.SUB_IMG_DIM)
+            'V1': np.linspace(x_axis[origin_x], x_axis[origin_x + config.SUB_IMG_DIM], config.SUB_IMG_DIM),
+            'V2': np.linspace(y_axis[origin_y], y_axis[origin_y + config.SUB_IMG_DIM], config.SUB_IMG_DIM)
         }
 
         return self.generate_labels(sub_img_data)
