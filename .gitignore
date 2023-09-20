@@ -144,3 +144,7 @@ dmypy.json
 /data/interim/*
 /data/processed/*
 /data/raw/*
+
+# Ignore logs and metrics files
+lightning_logs/
+mlruns/

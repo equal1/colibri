@@ -141,28 +141,28 @@ class DatasetPreparator:
             self,
             training_data: np.ndarray,
             training_labels: np.ndarray,
-            evaluation_data: np.ndarray,
-            evaluation_labels: np.ndarray, 
+            validation_data: np.ndarray,
+            validation_labels: np.ndarray, 
             save_path: str
             ) -> None:
         
 
             unprocessed_dataset_path = os.path.join(save_path, 'unprocessed_dataset')
             training_folder_path = os.path.join(unprocessed_dataset_path, 'training')
-            testing_folder_path = os.path.join(unprocessed_dataset_path, 'testing')
+            validation_folder_path = os.path.join(unprocessed_dataset_path, 'validation')
 
             if not os.path.exists(unprocessed_dataset_path):
                 os.makedirs(unprocessed_dataset_path)    
 
             if not os.path.exists(training_folder_path):
                 os.makedirs(training_folder_path)
-            if not os.path.exists(testing_folder_path):
-                os.makedirs(testing_folder_path)
+            if not os.path.exists(validation_folder_path):
+                os.makedirs(validation_folder_path)
 
             np.savez(os.path.join(training_folder_path, 'training_data.npz'), training_data=training_data)
             np.savez(os.path.join(training_folder_path, 'training_labels.npz'), training_labels=training_labels)
-            np.savez(os.path.join(testing_folder_path, 'evaluation_data.npz'), evaluation_data=evaluation_data)
-            np.savez(os.path.join(testing_folder_path, 'evaluation_labels.npz'), evaluation_labels=evaluation_labels)
+            np.savez(os.path.join(validation_folder_path, 'validation_data.npz'), validation_data=validation_data)
+            np.savez(os.path.join(validation_folder_path, 'validation_labels.npz'), validation_labels=validation_labels)
     
     def load_npz_file(self, file):
         file_data = np.load(file, allow_pickle=True)
@@ -198,7 +198,7 @@ class DatasetPreparator:
     def prepare_dataset(self, 
                         path_or_dict : Union[str, dict],
                         save_path: Optional[str] = None,
-                        train_test_split: float = 0.8, 
+                        train_validation_split: float = 0.8, 
                         sensor_data_key: str = 'measurement',
                         label_key_name: str = 'state', 
                         should_resample: bool = True, 
@@ -206,11 +206,11 @@ class DatasetPreparator:
                         max_noise_limits: Optional[np.ndarray] = None
                         ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
             """
-            Prepares and partitions the dataset for model training and evaluation.
+            Prepares and partitions the dataset for model training and validation.
 
             Parameters:
                 path_or_dict : Either the path to a .npz file or a dictionary containing the dataset.
-                train_test_split: Percentage of the dataset to use for training.
+                train_validation_split: Percentage of the dataset to use for training.
                 sensor_data_key: The key corresponding to sensor data in the dataset.
                 label_key_name: The key for label data in the dataset.
                 should_resample: Flag to indicate whether resampling should be applied.
@@ -218,7 +218,7 @@ class DatasetPreparator:
                 max_noise_limits: Upper thresholds for noise classes.
 
             Returns:
-                A tuple containing Training Data, Training Labels, Evaluation Data, and Evaluation Labels.
+                A tuple containing Training Data, Training Labels, validation Data, and validation Labels.
             """
 
             data_collection, is_dict = self.load_data(path_or_dict)
@@ -233,7 +233,7 @@ class DatasetPreparator:
             else:
                 additional_labels = None
                 training_labels = None
-                evaluation_labels = None
+                validation_labels = None
 
             if label_key_name == 'data_quality':
                 is_data_quality = True
@@ -263,7 +263,7 @@ class DatasetPreparator:
 
             total_samples = sensor_readings.shape[0]
             print("Total number of samples :", total_samples)
-            num_training_samples = int(train_test_split * total_samples)
+            num_training_samples = int(train_validation_split * total_samples)
 
             training_data = sensor_readings[:num_training_samples]
             print("Training data info:", training_data.shape)
@@ -272,12 +272,12 @@ class DatasetPreparator:
             if additional_labels is not None:
                 training_labels = additional_labels[:num_training_samples]
 
-            evaluation_data = sensor_readings[num_training_samples:]
-            print("Evaluation data info:", evaluation_data.shape)
-            evaluation_states = state_labels[num_training_samples:]
+            validation_data = sensor_readings[num_training_samples:]
+            print("Validation data info:", validation_data.shape)
+            validation_states = state_labels[num_training_samples:]
 
             if additional_labels is not None:
-                evaluation_labels = additional_labels[num_training_samples:]
+                validation_labels = additional_labels[num_training_samples:]
 
             if is_data_quality:
                 training_labels = self.map_noise_to_classes(
@@ -285,8 +285,8 @@ class DatasetPreparator:
                     lower_bounds=min_noise_limits,
                     upper_bounds=max_noise_limits,
                 )
-                evaluation_labels = self.map_noise_to_classes(
-                    evaluation_states, evaluation_labels,
+                validation_labels = self.map_noise_to_classes(
+                    validation_states, validation_labels,
                     lower_bounds=min_noise_limits,
                     upper_bounds=max_noise_limits,
                 )
@@ -294,29 +294,29 @@ class DatasetPreparator:
             if should_resample:
                 training_data, training_labels = self.equalize_class_distribution(
                     training_data, training_states, training_labels)
-                evaluation_data, evaluation_labels = self.equalize_class_distribution(
-                    evaluation_data, evaluation_states, evaluation_labels)
+                validation_data, validation_labels = self.equalize_class_distribution(
+                    validation_data, validation_states, validation_labels)
             elif not should_resample and label_key_name == 'state':
                 training_labels = training_states
-                evaluation_labels = evaluation_states
+                validation_labels = validation_states
 
             if additional_labels is not None and len(training_labels.shape) == 1:
                 np.expand_dims(training_labels, 1)
-            if additional_labels is not None and len(evaluation_labels.shape) == 1:
-                np.expand_dims(evaluation_labels, 1)
+            if additional_labels is not None and len(validation_labels.shape) == 1:
+                np.expand_dims(validation_labels, 1)
 
             
             if save_path is not None:
                 self.save_dataset(
                     training_data,
                     training_labels,
-                    evaluation_data,
-                    evaluation_labels,
+                    validation_data,
+                    validation_labels,
                     save_path
                 )
 
 
-            return training_data, training_labels, evaluation_data, evaluation_labels
+            return training_data, training_labels, validation_data, validation_labels
 
 
 

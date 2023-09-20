@@ -32,25 +32,27 @@ class SubImagePreprocessor:
     def save_dataset(
             self,
             proccessed_img_batch: np.ndarray,
-            train_or_test: str,
+            processed_label_batch: np.ndarray,
+            train_or_validation: str,
             save_path: str
             ) -> None:
         
             processed_dataset_path = os.path.join(save_path, 'processed_dataset')
 
-            if train_or_test == 'train':
-                train_or_test = 'training'
-                train_or_test_path = os.path.join(processed_dataset_path, train_or_test)
+            if train_or_validation == 'training':
+                train_or_validation_path = os.path.join(processed_dataset_path, train_or_validation)
             else:
-                train_or_test = 'testing'
-                train_or_test_path = os.path.join(processed_dataset_path, train_or_test)
+                train_or_validation_path = os.path.join(processed_dataset_path, train_or_validation)
 
-            if not os.path.exists(train_or_test_path):
-                os.makedirs(train_or_test_path)
+            if not os.path.exists(train_or_validation_path):
+                os.makedirs(train_or_validation_path)
 
-            numpy_file_name = 'processed_' + train_or_test + '_data.npz'
+            data_file_name = 'processed_' + train_or_validation + '_data.npz'
+            labels_file_name = 'processed_' + train_or_validation + '_labels.npz'
 
-            np.savez(os.path.join(train_or_test_path, numpy_file_name), numpy_file_name=proccessed_img_batch)
+
+            np.savez(os.path.join(train_or_validation_path, data_file_name), data=proccessed_img_batch)
+            np.savez(os.path.join(train_or_validation_path, labels_file_name), labels=processed_label_batch)
 
 
     def preprocess_subimage(self, img: np.ndarray) -> np.ndarray:
@@ -91,7 +93,8 @@ class SubImagePreprocessor:
 
     def preprocess_subimages(self, 
                             img_batch: np.ndarray,
-                            train_or_test: str = "",
+                            label_batch: np.ndarray = None,
+                            train_or_validation: str = "",
                             save_path: str = None
                             ) -> np.ndarray:
         """
@@ -105,5 +108,5 @@ class SubImagePreprocessor:
         """
         proccessed_img_batch = np.array([self.preprocess_subimage(img) for img in img_batch])
         if save_path is not None:
-            self.save_dataset(proccessed_img_batch, train_or_test, save_path)
-        return proccessed_img_batch
+            self.save_dataset(proccessed_img_batch, label_batch, train_or_validation, save_path)
+        return proccessed_img_batch, label_batch
