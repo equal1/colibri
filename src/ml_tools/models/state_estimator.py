@@ -8,8 +8,10 @@ import ml_tools.config as config
 class StateEstimator(pl.LightningModule):
     def __init__(self, model_opt='noise_opt'):
         super(StateEstimator, self).__init__()
-
+        
+        # model options
         if model_opt == 'noise_opt':
+            # best values from manual hyperparameter search so far
             self.lr = 1.21e-3
             n_filters = [[22, 22], [35, 35]]
             self.drop_rates = [[0.655, 0.655], [0.194, 0.194]]
@@ -19,8 +21,9 @@ class StateEstimator(pl.LightningModule):
             kernel_size = 7
             stride = 2
             padding = (kernel_size - 1) // 2
-
+        # it might be useful in the future to only train on the noiseless data
         elif model_opt == 'noiseless_opt':
+            # not yet optimized
             self.lr = 3.45e-3
             n_filters = [[23], [7], [18]]
             self.drop_rates = [[0.12], [0.28], [0.30]]
@@ -47,7 +50,8 @@ class StateEstimator(pl.LightningModule):
                 else:
                     layers.append(nn.BatchNorm2d(out_channels))
             
-                # layers.append(nn.Dropout(self.drop_rates[i][j]))
+                layers.append(nn.Dropout(self.drop_rates[i][j]))
+
                 layers.append(nn.ReLU())
 
         
