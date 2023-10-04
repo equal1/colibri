@@ -1,7 +1,6 @@
 from typing import Tuple, Union, Optional
 import random, glob, os, json
 
-import concurrent.futures
 import numpy as np
 
 import ml_tools.config as config
@@ -171,29 +170,28 @@ class DatasetPreparator:
     def load_data(self, path_or_dict):
         try:
             is_dict = False
-            if path_or_dict.endswith('.npz'):
+            if isinstance(path_or_dict, str) and path_or_dict.endswith('.npz'):
                 data_files = [path_or_dict]
             else:
                 data_files = glob.glob(path_or_dict + '*.npz')
 
             data_collection = {}
-            
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                future_to_file = {executor.submit(self.load_npz_file, file): file for file in data_files}
-                
-                for future in concurrent.futures.as_completed(future_to_file):
-                    file = future_to_file[future]
-                    try:
-                        data = future.result()
-                    except Exception as exc:
-                        print(f'{file} generated an exception: {exc}')
-                    else:
-                        data_collection.update(data)
+
+            for file in data_files:
+                try:
+                    data = self.load_npz_file(file)
+                except Exception as exc:
+                    print(f'{file} generated an exception: {exc}')
+                else:
+                    data_collection.update(data)
+
         except TypeError:
             is_dict = True
             data_collection = path_or_dict
-        
+
         return data_collection, is_dict
+
+        
     
     def prepare_dataset(self, 
                         path_or_dict : Union[str, dict],
@@ -237,9 +235,10 @@ class DatasetPreparator:
 
             if label_key_name == 'data_quality':
                 is_data_quality = True
-                label_key_name = 'noise_level '
+                label_key_name = 'noise_level'
             else:
                 is_data_quality = False
+
 
             for key in data_keys:
 
@@ -251,7 +250,7 @@ class DatasetPreparator:
                 sensor_data = individual_data[sensor_data_key]
                 sensor_readings.append(sensor_data.reshape(config.SUB_IMG_DIM, config.SUB_IMG_DIM, 1))
                 state_labels.append(individual_data['state'])
-
+                
                 if additional_labels is not None:
                     additional_labels.append(individual_data[label_key_name])
 
@@ -317,8 +316,6 @@ class DatasetPreparator:
 
 
             return training_data, training_labels, validation_data, validation_labels
-
-
 
 
 

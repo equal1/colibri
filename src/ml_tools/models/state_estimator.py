@@ -17,7 +17,7 @@ class StateEstimator(pl.LightningModule):
             self.drop_rates = [[0.655, 0.655], [0.194, 0.194]]
             self.n_cnn = 2
             self.cnn_stack = 2
-            self.layer_norm = False
+            self.normalization = False
             kernel_size = 7
             stride = 2
             padding = (kernel_size - 1) // 2
@@ -29,7 +29,7 @@ class StateEstimator(pl.LightningModule):
             self.drop_rates = [[0.12], [0.28], [0.30]]
             self.n_cnn = 3
             self.cnn_stack = 1
-            self.layer_norm = True
+            self.normalization = True
             kernel_size = 5
             stride = 2
             padding = (kernel_size - 1) // 2
@@ -45,12 +45,11 @@ class StateEstimator(pl.LightningModule):
                 layers.append(nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, stride=stride, padding=padding))
                 nn.init.kaiming_normal_(layers[-1].weight, mode='fan_in', nonlinearity='relu')
 
-                if self.layer_norm:
-                    layers.append(nn.LayerNorm(out_channels))
-                else:
-                    layers.append(nn.BatchNorm2d(out_channels))
+                # if self.normalization:
+                #     layers.append(nn.BatchNorm2d(out_channels))
+                    
             
-                layers.append(nn.Dropout(self.drop_rates[i][j]))
+                # layers.append(nn.Dropout(self.drop_rates[i][j]))
 
                 layers.append(nn.ReLU())
 
@@ -93,5 +92,5 @@ class StateEstimator(pl.LightningModule):
         y_class_indices = torch.argmax(y, dim=1)
         accuracy = (torch.argmax(y_hat, dim=1) == y_class_indices).float().mean()
         
-        self.log('train_accuracy', accuracy, on_step=True, on_epoch=True, logger=True)
+        self.log('val_accuracy', accuracy, on_step=True, on_epoch=True, logger=True)
         self.log('val_loss', loss, on_step=True, on_epoch=True, logger=True)
