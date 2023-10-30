@@ -149,3 +149,6 @@ dmypy.json
 lightning_logs/
 mlruns/
 search_logs/
+
+# Ignore all the models that are not the final ones
+/models/intermediary_models/*
