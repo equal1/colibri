@@ -1,6 +1,6 @@
 # reports
 ## Description
-Any non-code resources that are useful for the project 
+Any non-code resources that are useful for the project. 
 
 ---
 
