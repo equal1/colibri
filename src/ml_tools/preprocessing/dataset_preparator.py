@@ -158,10 +158,10 @@ class DatasetPreparator:
             if not os.path.exists(validation_folder_path):
                 os.makedirs(validation_folder_path)
 
-            np.savez(os.path.join(training_folder_path, 'training_data.npz'), training_data=training_data)
-            np.savez(os.path.join(training_folder_path, 'training_labels.npz'), training_labels=training_labels)
-            np.savez(os.path.join(validation_folder_path, 'validation_data.npz'), validation_data=validation_data)
-            np.savez(os.path.join(validation_folder_path, 'validation_labels.npz'), validation_labels=validation_labels)
+            np.savez(os.path.join(training_folder_path, 'training_data.npz'), data=training_data)
+            np.savez(os.path.join(training_folder_path, 'training_labels.npz'), labels=training_labels)
+            np.savez(os.path.join(validation_folder_path, 'validation_data.npz'), data=validation_data)
+            np.savez(os.path.join(validation_folder_path, 'validation_labels.npz'), labels=validation_labels)
     
     def load_npz_file(self, file):
         file_data = np.load(file, allow_pickle=True)
@@ -184,6 +184,7 @@ class DatasetPreparator:
                     print(f'{file} generated an exception: {exc}')
                 else:
                     data_collection.update(data)
+
 
         except TypeError:
             is_dict = True
