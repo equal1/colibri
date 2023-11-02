@@ -48,7 +48,7 @@ The project is structured as follows:
 │   ├── ml_tools          <- Directory for machine learning related code
 │   │    ├── data         <- Scripts to download or generate data
 │   │    │
-│   │    ├─ preprocessing <- Scripts to process raw data for modeling
+│   │    ├── preprocessing <- Scripts to process raw data for modeling
 │   │    │
 │   │    ├── models       <- Scripts to train models and then use trained models to make
 │   │    │                    predictions
