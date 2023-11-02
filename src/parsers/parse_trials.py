@@ -40,12 +40,8 @@ def parse_trial_log_file(filepath):
     return filtered_trials
 
 def extract_information_from_trials(study_path, log_file='extract_trials_log.txt', order_by='value'):
-
-   
     study = load_study_from_pickle(study_path) 
-
     all_trials = study.trials
-
 
     # Open the log file in write mode
     with open(log_file, 'w') as log_f:

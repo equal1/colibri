@@ -12,26 +12,6 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), "../")))
 
 from ml_tools.models.state_estimator import StateEstimatorWrapper
 
-optimal_model_config = {
-    'in_channels': 1,
-    'cnn_blocks': 6,
-    'kernel_size': 5,
-    'base_filters': 64,
-    'fc_blocks': 2,
-    'num_classes': 5,
-    'activation': 'tanh', # (relu,leaky_relu,tanh)
-    'cnn_pooling': 'max_pool', # (max_pool,avg_pool)
-    'global_pooling': 'adaptive_avg', # (adaptive_avg,adaptive_max)
-    'conv_drop_rate': 0.1496526893126031,
-    'fc_drop_rate': 0.13400162558848863,
-    'drop_rate_decay': 0.2400133983649985
-}
-
-optimal_optimizer_config = {
-        'learning_rate': 0.006834557945902603,
-        'momentum': 0.9790420970484083,
-        'weight_decay': 0.0012367741418186516,
-    }
 
 def objective(trial: optuna.trial.Trial) -> float:
 
@@ -79,11 +59,20 @@ def objective(trial: optuna.trial.Trial) -> float:
     
     return trainer.callback_metrics["val_accuracy"].item()
 
-# Create a study object and specify the direction is "minimize".
-study = optuna.create_study(direction='maximize')
-study.optimize(objective, n_trials=1000)  # You can change n_trials to any number you like
+def search(number_of_trials=100, minimize=True, maximize=False, save_study_path=None):
+    if minimize and maximize:
+        raise ValueError("minimize and maximize cannot both be True")
+    elif minimize:
+        direction = 'minimize'
+    elif maximize:
+        direction = 'maximize'
 
-# save the study to a file
-with open("logs/study_state_estimator.pkl", "wb") as f:
-    pickle.dump(study, f)
+    # Create a study object and specify the direction is "minimize".
+    study = optuna.create_study(direction=direction)
+    study.optimize(objective, n_trials=number_of_trials)  # You can change n_trials to any number you like
+
+    # save the study to a file
+    if save_study_path is not None:
+        with open(save_study_path, "wb") as f:
+            pickle.dump(study, f)
 

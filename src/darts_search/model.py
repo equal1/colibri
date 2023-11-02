@@ -3,9 +3,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 # Importing necessary utilities and operations for the architecture search
-from search.utils import drop_path
-from search.darts_search.operations import *
-from search.darts_search.genotypes import Genotype, PRIMITIVES
+from darts_search.operations import *
+from darts_search.genotypes import Genotype, PRIMITIVES
+
+from ml_tools.models.model_utils import drop_path
 
 # MixedOp is used to combine multiple operations (like convolution, pooling, etc.) based on their weights.
 class MixedOp(nn.Module):

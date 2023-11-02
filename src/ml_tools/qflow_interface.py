@@ -18,21 +18,21 @@ from ml_tools.models.model_utils import prepare_dataloader
 # Diferent locations for where to work with the data
 # TODO: Maybe i should make a class for this
 quality_control_paths = {
-    "raw": '../data/raw/data_qflow_v2/simulated/sim_uniform/',
-    "interim": '../data/interim/data_qflow_v2/simulated/sim_uniform/',
-    "interim_save": "../data/interim/data_qflow_v2/simulated/sim_uniform/",
-    "unprocessed_dataset": '../data/interim/data_qflow_v2/simulated/sim_uniform/unprocessed_dataset/',
-    "processed": '../data/processed/data_qflow_v2/simulated/sim_uniform/',
-    "processed_dataset": '../data/processed/data_qflow_v2/simulated/sim_uniform/processed_dataset/',
+    "raw": '../../data/raw/data_qflow_v2/simulated/sim_uniform/',
+    "interim": '../../data/interim/data_qflow_v2/simulated/sim_uniform/',
+    "interim_save": "../../data/interim/data_qflow_v2/simulated/sim_uniform/",
+    "unprocessed_dataset": '../../data/interim/data_qflow_v2/simulated/sim_uniform/unprocessed_dataset/',
+    "processed": '../../data/processed/data_qflow_v2/simulated/sim_uniform/',
+    "processed_dataset": '../../data/processed/data_qflow_v2/simulated/sim_uniform/processed_dataset/',
 }
 
 state_estimator_paths = {
-    "raw": '../data/raw/data_qflow_v2/simulated/sim_normal/',
-    "interim": '../data/interim/data_qflow_v2/simulated/sim_normal/',
-    "interim_save": "../data/interim/data_qflow_v2/simulated/sim_normal/",
-    "unprocessed_dataset": '../data/interim/data_qflow_v2/simulated/sim_normal/unprocessed_dataset/',
-    "processed": '../data/processed/data_qflow_v2/simulated/sim_normal/',
-    "processed_dataset": '../data/processed/data_qflow_v2/simulated/sim_normal/processed_dataset/',
+    "raw": '../../data/raw/data_qflow_v2/simulated/sim_normal/',
+    "interim": '../../data/interim/data_qflow_v2/simulated/sim_normal/',
+    "interim_save": "../../data/interim/data_qflow_v2/simulated/sim_normal/",
+    "unprocessed_dataset": '../../data/interim/data_qflow_v2/simulated/sim_normal/unprocessed_dataset/',
+    "processed": '../../data/processed/data_qflow_v2/simulated/sim_normal/',
+    "processed_dataset": '../../data/processed/data_qflow_v2/simulated/sim_normal/processed_dataset/',
 }
 
 
@@ -212,7 +212,7 @@ def read_qflow_test_data(batch_size=64):
     - DataLoader with test data.
     """
         
-    test_data_path = '../data/raw/data_qflow_v2/experimental/exp_small/'
+    test_data_path = '../../data/raw/data_qflow_v2/experimental/exp_small/'
     test_data, test_labels = prepare_test_data(test_data_path)
     test_dataloader = prepare_dataloader(test_data, test_labels, type='val', batch_size=batch_size)
     return test_dataloader
@@ -239,7 +239,7 @@ def read_qflow_data(batch_size=64, label_key_name='state', is_prepared=False, fa
         dataset_paths = quality_control_paths
 
     if is_prepared:
-        dataset_path = f'../data/processed/data_qflow_v2/simulated/{simulated_data_type}/processed_dataset/'
+        dataset_path = f'../../data/processed/data_qflow_v2/simulated/{simulated_data_type}/processed_dataset/'
         train_data, train_labels = load_npz_data(dataset_path, 'training', processed=True)
         validation_data, validation_labels = load_npz_data(dataset_path, 'validation', processed=True)
     else:

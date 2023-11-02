@@ -8,7 +8,6 @@ import numpy as np
 from torch.autograd import Variable
 from torch.utils.data import DataLoader, TensorDataset
 from torchsummary import summary as torch_summary
-import torchvision.transforms as transforms
 
 
 def prepare_dataloader(features, labels, type, batch_size=64, shuffle=True, seed=None, num_workers=24):
@@ -175,3 +174,39 @@ def model_summary(model, input_size, device="cuda"):
         return summary_str
     except Exception as e:
         return str(e)
+
+def extract_model_from_wrapper(wrapper_model, saved_model_path=None, checkpoint_path=None):
+    checkpoint = torch.load(checkpoint_path)
+    wrapper_model.load_state_dict(checkpoint['state_dict'])
+    model = wrapper_model.model
+
+    if saved_model_path is not None:
+        torch.save(model, saved_model_path)
+    else:
+        return model
+
+def infer(model, criterion, data_queue):
+  model.eval()
+
+  y_true = []
+  y_pred = []
+  total = 0.0
+  total_loss = 0.0
+
+  for step, (input, target) in enumerate(data_queue):
+      n = input.size(0)
+      total += n
+
+      input, target_labels = input.cuda(), torch.argmax(target, 1).cuda()
+      logits = model(input)
+
+      pred = torch.argmax(logits, 1)
+      y_true.extend(target_labels.cpu().data.numpy())
+      y_pred.extend(pred.cpu().data.numpy())
+
+      loss = criterion(logits, target_labels)
+      total_loss += n * loss.cpu().data.numpy()
+
+  correct = (np.array(y_pred) == np.array(y_true)).sum()
+  acc = correct * (100.0 / len(y_pred))
+  return acc, total_loss / total, y_pred, y_true

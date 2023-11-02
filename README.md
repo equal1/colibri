@@ -28,37 +28,44 @@ The project is structured as follows:
 │                           `1.0-jqp-initial-data-exploration`.
 │
 ├── references            <- Papers, articles, and all other explanatory materials.
+│  └── Autotuning         <- Papers and articles on the subject of autotuning
+│  └── Unorganized        <- Papers and articles that are not yet organized
 │   
 ├── resources             <- Any non-code resources that are useful for the project 
-│   ├── reports           <- Generated analysis as HTML, PDF, LaTeX, etc.
-│   └── figures           <- Generated graphics and figures to be used in reporting
+│   ├── reports           <- Generated analysis as HTML, PDF, LaTeX, JSON, etc.
+│   ├── figures           <- Generated graphics and figures to be used in reporting
+│   └── metrics           <- Generated evaluation metrics to be used in reporting
 |
-├── setup_scripts         <- Scripts or tools for setting up the environment
+├── setup                  <- Scripts or tools for setting up the environment
+│   ├── envs               <- Conda environment files
+│   └── scripts            <- Scripts for setting up the environment
 │   
 ├── src                   <- Source code for use in this project.
 │   ├── __init__.py       <- Makes src a Python module
 │   │   
 │   ├── colibri           <- Root namespace for the framework
 │   │
-│   └── ml_tools  <- Directory for machine learning related code
-│     ├── data            <- Scripts to download or generate data
-│     │
-│     ├── preprocessing   <- Scripts to process raw data for modeling
-│     │
-│     ├── models          <- Scripts to train models and then use trained models to make
-│     │                      predictions
-│     │
-│     └── visualization   <- Scripts to create exploratory and results oriented visualizations
+│   ├── ml_tools          <- Directory for machine learning related code
+│   │    ├── data         <- Scripts to download or generate data
+│   │    │
+│   │    ├─ preprocessing <- Scripts to process raw data for modeling
+│   │    │
+│   │    ├── models       <- Scripts to train models and then use trained models to make
+│   │    │                    predictions
+│   │    │
+│   |    └── visualization <- Scripts to create exploratory and results oriented visualizations
+│   │
+|   ├── parsers           <- Parser to extract data from the database, reports, etc.
+│   │
+│   ├── baysean_search    <- Directory for hyperparameter optimization made with Optuna
+│   │
+│   └── darts_search      <- Directory for architecture search made with DARTS algorithm
 │
 ├── tests                 <- Directory for unit tests
 |
 ├── .gitignore            <- Files and directories to be ignored by git
 │
-├── README.md             <- The top-level README for developers using this project.
-│
-├── environment.yml       <- The conda environment file for reproducing the development environment.
-│                            
-│
+├── README.md             <- The top-level README for developers using this project.│
 │
 └── setup.py              <- Make this project pip installable with `pip install -e`(TODO)
 
@@ -92,7 +99,8 @@ We are assuming that Git and a code editor(like VSCode,Neovim,etc) are already i
    ```
 5. Create a conda environment for the project. You can do this by running the following command in the root directory of the project:
    ```bash
-     conda env create -f environment.yml
+     conda env create -f setup/envs/colibri.yml
+     conda env create -f setup/envs/graphviz.yml
    ```
 6. Activate the environment by running the following command:
    ```bash
@@ -178,7 +186,7 @@ You can find the general workflow and also a good introduction to Git [here](htt
 ### References
 You can find links to all the papers and articles on the subject of autotuning in the references folder.
 
-You can also see links to publicly available data sets in the data/external folder.
+You can also see links to publicly available datasets in the data/external folder.
 
 ---
 

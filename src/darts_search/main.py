@@ -11,10 +11,10 @@ import warnings
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), "../")))
 
-import search.darts_search.genotypes as genotypes
-from search import utils
-from search.darts_search.model import Network
-from search.darts_search.architect import Architect
+import darts_search.genotypes as genotypes
+from darts_search.model import Network
+from darts_search.architect import Architect
+from ml_tools.models.model_utils import model_utils
 
 from ml_tools.models.state_estimator import StateEstimator
 
@@ -37,7 +37,7 @@ lambda_valid_regularizer = config['lambda_valid_regularizer']
 result_gentotype = []
 
 # Main function for training and architecture search
-def main(is_search):
+def dart_search(is_search=True):
     if not torch.cuda.is_available():
         print('no gpu device available')
         sys.exit(1)
@@ -148,7 +148,7 @@ def train(epoch, train_queue, valid_queue, model, criterion, optimizer, architec
         # Forward and backward passes for model weights
         optimizer.zero_grad()
         logits, _ = model(input)
-        prec = utils.accuracy(logits, target)
+        prec = model_utils.accuracy(logits, target)
         loss = criterion(logits, target)
         loss_val = loss.cpu().data.numpy()
         loss.backward()
@@ -171,15 +171,14 @@ def infer(epoch, valid_queue, model, criterion):
         input = input.cuda()
         target = target.cuda()
         logits, _ = model(input)
-        prec = utils.accuracy(logits, target)
+        prec = model_utils.accuracy(logits, target)
         loss = criterion(logits, target)
         loss_val = loss.cpu().data.numpy()
 
         logging.info('valid_epoch:%d step:%d loss:%f acc:%f' % (epoch, step, loss_val, prec))
         print('valid_epoch:%d step:%d loss:%f acc:%f' % (epoch, step, loss_val, prec))
 
-if __name__ == '__main__':
-    main(is_search=False)  # Set to False for training
+
 
 
 

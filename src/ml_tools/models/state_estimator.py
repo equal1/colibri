@@ -9,37 +9,23 @@ import pytorch_lightning as pl
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), "../")))
 from ml_tools import qflow_interface
+from ml_tools import config
 
+# Simple CNN for state estimation
 class StateEstimator(nn.Module):
-    def __init__(self, model_opt='noise_opt'):
+    def __init__(self):
         super(StateEstimator, self).__init__()
         
-        # model options
-        if model_opt == 'noise_opt':
-            # best values from manual hyperparameter search so far
-            self.lr = 1.21e-3
-            n_filters = [[22, 22], [35, 35]]
-            self.drop_rates = [[0.655, 0.655], [0.194, 0.194]]
-            self.n_cnn = 2
-            self.cnn_stack = 2
-            self.normalization = True
-            kernel_size = 7
-            stride = 2
-            padding = (kernel_size - 1) // 2
-        # it might be useful in the future to only train on the noiseless data
-        elif model_opt == 'noiseless_opt':
-            # not yet optimized
-            self.lr = 3.45e-3
-            n_filters = [[23], [7], [18]]
-            self.drop_rates = [[0.12], [0.28], [0.30]]
-            self.n_cnn = 3
-            self.cnn_stack = 1
-            self.normalization = True
-            kernel_size = 5
-            stride = 2
-            padding = (kernel_size - 1) // 2
-        else:
-            raise ValueError('model_opt not recognized')
+        # best values from manual hyperparameter search so far
+        self.lr = 1.21e-3
+        n_filters = [[22, 22], [35, 35]]
+        self.drop_rates = [[0.655, 0.655], [0.194, 0.194]]
+        self.n_cnn = 2
+        self.cnn_stack = 2
+        self.normalization = True
+        kernel_size = 7
+        stride = 2
+        padding = (kernel_size - 1) // 2
         
         layers = []
         for i in range(self.n_cnn):
@@ -103,6 +89,7 @@ class StateEstimator(nn.Module):
 # -----------------------------------------------------------------------------
 MIN_DROP_RATE = 0.1
 
+# Parameterized CNN used in hyperparameter search for the best model architecture
 class DynamicStateEstimator(nn.Module):
     def __init__(self,
                  in_channels=1, 
@@ -263,6 +250,7 @@ BATCH_SIZE = 512
 EPOCHS = 100
 MIN_LR = 0.001
 
+# Wrapper for the DynamicStateEstimator model
 class StateEstimatorWrapper(pl.LightningModule):
     def __init__(self, model_config, optimizer_config):
         super(StateEstimatorWrapper, self).__init__()
@@ -275,22 +263,29 @@ class StateEstimatorWrapper(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         x, y = batch
-        y_hat = self(x)
         y_class_indices = torch.argmax(y, dim=1)
+        y_hat = self(x)
+
+
         loss = F.cross_entropy(y_hat, y)
         accuracy = (y_hat.argmax(dim=1) == y_class_indices).float().mean()
-        self.log('val_accuracy', accuracy, on_epoch=True, logger=True)
-        self.log('val_loss', loss, on_epoch=True, logger=True)
+
+        self.log('train_accuracy', accuracy, on_epoch=True, logger=True)
+        self.log('train_loss', loss, on_epoch=True, logger=True)
+        
         return loss
 
     def validation_step(self, batch, batch_idx):
         x, y = batch
         y_class_indices = torch.argmax(y, dim=1)
         y_hat = self(x)
+        
         loss = F.cross_entropy(y_hat, y)
         accuracy = (y_hat.argmax(dim=1) == y_class_indices).float().mean()
-        self.log('train_accuracy', accuracy, on_epoch=True, logger=True)
-        self.log('train_loss', loss, on_epoch=True, logger=True)
+
+        self.log('val_accuracy', accuracy, on_epoch=True, logger=True)
+        self.log('val_loss', loss, on_epoch=True, logger=True)
+
 
     def configure_optimizers(self):
         optimizer = torch.optim.SGD(

@@ -52,12 +52,13 @@ def visualize_study(save_dir, study):
     fig = plot_param_importances(study)
     pio.write_html(fig, f"{study_dir}/parameter_importance.html")
 
-def main():
-    filename = 'logs/study_state_estimator.pkl'
-    study = load_study_from_pickle(filename)
+def analyze_study(study_path, save_dir, display_info=True, visualize=True):
+    study = load_study_from_pickle(study_path)
 
-    display_study_info(study)
-    visualize_study('figures/study', study)
+    if display_info:
+        display_study_info(study)
+    
+    if visualize:
+        visualize_study(save_dir, study)
 
-if __name__ == "__main__":
-    main()
+

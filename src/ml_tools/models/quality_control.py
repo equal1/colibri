@@ -5,6 +5,13 @@ import pytorch_lightning as pl
 
 import ml_tools.config as config 
 
+
+# Constants
+OUT_CLASSES = 5
+BATCH_SIZE = 512
+EPOCHS = 100
+MIN_LR = 0.001
+
 class QualityControl(pl.LightningModule):
     def __init__(self):
         super(QualityControl, self).__init__()
@@ -77,32 +84,34 @@ class QualityControl(pl.LightningModule):
         x = torch.flatten(x, 1)
         x = self.fc_layers(x)
         x = self.fc_final(x)
-        return F.softmax(x, dim=1)
-
+        return x
+    
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
-        return optimizer
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, EPOCHS, eta_min=MIN_LR)
+        return [optimizer], [scheduler]
 
     def training_step(self, batch, batch_idx):
         x, y = batch
-        y_hat = self(x)
-        loss = F.cross_entropy(y_hat, y)
-
         y_class_indices = torch.argmax(y, dim=1)
+        y_hat = self(x)
+
+        loss = F.cross_entropy(y_hat, y)
         accuracy = (torch.argmax(y_hat, dim=1) == y_class_indices).float().mean()
 
-        self.log('train_accuracy', accuracy, on_step=True, on_epoch=True, logger=True)
-        self.log('train_loss', loss, on_step=True, on_epoch=True, logger=True)
+        self.log('train_accuracy', accuracy, on_epoch=True, logger=True)
+        self.log('train_loss', loss, on_epoch=True, logger=True)
 
         return loss
 
+
     def validation_step(self, batch, batch_idx):
         x, y = batch
-        y_hat = self(x)
-        loss = F.cross_entropy(y_hat, y)
-
         y_class_indices = torch.argmax(y, dim=1)
+        y_hat = self(x)
+
+        loss = F.cross_entropy(y_hat, y)
         accuracy = (torch.argmax(y_hat, dim=1) == y_class_indices).float().mean()
 
-        self.log('val_accuracy', accuracy, on_step=True, on_epoch=True, logger=True)
-        self.log('val_loss', loss, on_step=True, on_epoch=True, logger=True)
+        self.log('val_accuracy', accuracy, on_epoch=True, logger=True)
+        self.log('val_loss', loss, on_epoch=True, logger=True)
