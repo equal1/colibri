@@ -28,44 +28,37 @@ The project is structured as follows:
 │                           `1.0-jqp-initial-data-exploration`.
 │
 ├── references            <- Papers, articles, and all other explanatory materials.
-│  └── Autotuning         <- Papers and articles on the subject of autotuning
-│  └── Unorganized        <- Papers and articles that are not yet organized
 │   
 ├── resources             <- Any non-code resources that are useful for the project 
-│   ├── reports           <- Generated analysis as HTML, PDF, LaTeX, JSON, etc.
-│   ├── figures           <- Generated graphics and figures to be used in reporting
-│   └── metrics           <- Generated evaluation metrics to be used in reporting
+│   ├── reports           <- Generated analysis as HTML, PDF, LaTeX, etc.
+│   └── figures           <- Generated graphics and figures to be used in reporting
 |
-├── setup                  <- Scripts or tools for setting up the environment
-│   ├── envs               <- Conda environment files
-│   └── scripts            <- Scripts for setting up the environment
+├── setup_scripts         <- Scripts or tools for setting up the environment
 │   
 ├── src                   <- Source code for use in this project.
 │   ├── __init__.py       <- Makes src a Python module
 │   │   
 │   ├── colibri           <- Root namespace for the framework
 │   │
-│   ├── ml_tools          <- Directory for machine learning related code
-│   │    ├── data         <- Scripts to download or generate data
-│   │    │
-│   │    ├── preprocessing <- Scripts to process raw data for modeling
-│   │    │
-│   │    ├── models       <- Scripts to train models and then use trained models to make
-│   │    │                    predictions
-│   │    │
-│   |    └── visualization <- Scripts to create exploratory and results oriented visualizations
-│   │
-|   ├── parsers           <- Parser to extract data from the database, reports, etc.
-│   │
-│   ├── baysean_search    <- Directory for hyperparameter optimization made with Optuna
-│   │
-│   └── darts_search      <- Directory for architecture search made with DARTS algorithm
+│   └── machine_learning  <- Directory for machine learning related code
+│     ├── data            <- Scripts to download or generate data
+│     │
+│     ├── features        <- Scripts to turn raw data into features for modeling
+│     │
+│     ├── models          <- Scripts to train models and then use trained models to make
+│     │                      predictions
+│     │
+│     └── visualization   <- Scripts to create exploratory and results oriented visualizations
 │
 ├── tests                 <- Directory for unit tests
 |
 ├── .gitignore            <- Files and directories to be ignored by git
 │
-├── README.md             <- The top-level README for developers using this project.│
+├── README.md             <- The top-level README for developers using this project.
+│
+├── environment.yml       <- The conda environment file for reproducing the development environment.
+│                            
+│
 │
 └── setup.py              <- Make this project pip installable with `pip install -e`(TODO)
 
@@ -77,7 +70,7 @@ The documentation for this project is hosted on our wiki. You can find it here (
 
 ### For use or development on a local machine
 #### Prerequisites
-We are assuming that Git and a code editor(like VSCode,Neovim,etc) are already installed on your machine.
+We are assuming that Git and a code editor(like VS Code,Neovim,etc) are already installed on your machine.
 #### Steps
 1. Set up GitHub SSH key-based authentication on your target system(optional but recommended). You can find instructions on how to do that [here](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent).
 
@@ -99,15 +92,14 @@ We are assuming that Git and a code editor(like VSCode,Neovim,etc) are already i
    ```
 5. Create a conda environment for the project. You can do this by running the following command in the root directory of the project:
    ```bash
-     conda env create -f setup/envs/colibri.yml
-     conda env create -f setup/envs/graphviz.yml
+     conda env create -f environment.yml
    ```
 6. Activate the environment by running the following command:
    ```bash
      conda activate colibri
    ```
    Note: You you made any mistake when working with conda you can simply delete the miniconda directory and start over without any issues.
-7. Open the project in your code editor. For VSCode you can do this by running the following command in the root directory of the project:
+7. Open the project in your code editor. For VS CODE you can do this by running the following command in the root directory of the project:
    ```bash
      code .
    ```
@@ -148,16 +140,15 @@ Most of the steps are taken from [here](https://paper.dropbox.com/doc/How-to-log
      cd <your_username>
    ```
 4. Follow the steps from the previous section to clone the repository and set up the environment(Steps 2-6).
-5. Now we need a way to connect with a code editor .For VSCode follow the instructions from this [page](https://code.visualstudio.com/docs/remote/ssh), but only the subsection called "Installation" and "Connect to a remote host".
+5. Now we need a way to connect with a code editor .For VS CODE follow the instructions from this [page](https://code.visualstudio.com/docs/remote/ssh), but only the subsection called "Installation" and "Connect to a remote host".
 6. You should setup your ssh key authtification so you don't need to enter your password every time you connect to Lena. You can find a very good article [here](https://adamtheautomator.com/add-ssh-key-to-vs-code/)(Follow the article until the section "Associating the Public Key with the root User").
-7. You can now only use VSCode if you like, but i also like to still use MobaXterm for some things. You can set a new connection to Lena in MobaXterm by doing what we previsly did with the only diference that you can click on "Advanced SSH settings" and 
+7. You can now only use VS CODE if you like, but i also like to still use MobaXterm for some things. You can set a new connection to Lena in MobaXterm by doing what we previsly did with the only diference that you can click on "Advanced SSH settings" and 
 click on "Use private key" and select the private key you generated in the previous step.Now you can connect to Lena with only one click and without entering your password.
 8. You can add the following line to your `.bashrc` file for easy access to the project:
    ```bash
      # Custom aliases
       alias cdl='cd /local/rbals'
       alias ac="conda activate colibri"
-      alias ag="conda activate graphviz"
       alias a="conda activate"
       alias d="conda deactivate"
 
@@ -173,11 +164,29 @@ click on "Use private key" and select the private key you generated in the previ
 
 10. Happy coding!
 
+### Traking large files with Git LFS
+Some rules of thumb for when a file should be tracked with Git LFS:
+-> big binaries
+-> diferent extensions for pictures, plots, etc
+-> json, yaml or other text files are not binary but if it doesn't have newlines or it's too big then it's not worth storing as text, and should be stored as binary instead(like the .db files or .hdf5 files)
+-> everything that doesn't change compatibly with Diff
+-> an exception is made for small binary files of several tens of kb even mb(rarely) or for files that are not changed often
+
+To track a file with Git LFS you need to run the following command:
+```bash
+  git lfs track <path_to_file>
+```
+
+If you add a new type of large file to the project you can track all the files of that type by running the following command:
+```bash
+  git lfs track "*.<file_extension>"
+```
+
 ### Repository development guidelines
 The point of this section is to provide some guidelines for the development of the repository. These are not strict rules and you can deviate from them if you have a good reason to do so. The goal is to try to set some rules that will make the development process easier for everyone.
 
 #### Code style
-The point of a coding style is to make the code more readable and easier to understand. That's where linting tools come into the picture, they help us enforce a said coding style. Please apply a linting tool before committing python code. 
+The point of a coding style is to make the code more readable and easier to understand.That's where linting tools come into the picture, they help us enforce a said coding style. Please apply a linting tool before committing python code. 
 Right now we use **pylint** and **Black** but we might transition to **Ruff** later on.
 
 #### Git workflow
@@ -187,7 +196,7 @@ You can find the general workflow and also a good introduction to Git [here](htt
 ### References
 You can find links to all the papers and articles on the subject of autotuning in the references folder.
 
-You can also see links to publicly available datasets in the data/external folder.
+You can also see links to publicly available data sets in the data/external folder.
 
 ---
 
