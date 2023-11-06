@@ -157,6 +157,7 @@ click on "Use private key" and select the private key you generated in the previ
      # Custom aliases
       alias cdl='cd /local/rbals'
       alias ac="conda activate colibri"
+      alias ag="conda activate graphviz"
       alias a="conda activate"
       alias d="conda deactivate"
 
